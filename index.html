@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Clucko · free-range farm eggs · Odisha</title>
+  <meta name="description" content="Clucko: eggs from 1,200 free-roaming hens on six acres outside Pune, delivered the morning they are laid.">
+  <meta name="theme-color" content="#fff3df">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23ffe07f'/%3E%3Cpath d='M32 10c10 0 18 16 18 27a18 18 0 0 1-36 0c0-11 8-27 18-27z' fill='%23fff3df' stroke='%232b1a10' stroke-width='3'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500..700&family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..900,0..100;1,9..144,300..900,0..100&family=Outfit:wght@300..700&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+
+  <script>document.documentElement.classList.add('js', 'is-loading');</script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+
+  <!-- 0 · Loader -->
+  <div class="loader" id="loader" aria-hidden="true">
+    <div class="loader__egg">
+      <svg viewBox="0 0 120 150">
+        <defs>
+          <clipPath id="loaderClip"><path d="M60 6C92 6 112 60 112 92c0 32-24 52-52 52S8 124 8 92C8 60 28 6 60 6z"/></clipPath>
+          <linearGradient id="loaderYolk" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#ffc63d"/>
+            <stop offset="1" stop-color="#ff8f12"/>
+          </linearGradient>
+        </defs>
+        <g clip-path="url(#loaderClip)">
+          <path class="loader__yolk" id="loaderYolkFill" fill="url(#loaderYolk)" d="M0 150h120v150H0z"/>
+        </g>
+        <path class="loader__outline" d="M60 6C92 6 112 60 112 92c0 32-24 52-52 52S8 124 8 92C8 60 28 6 60 6z"/>
+        <path class="loader__crack" pathLength="1" d="M6 80l14-9 9 14 12-16 11 18 12-16 11 15 12-17 9 13 12-6"/>
+      </svg>
+    </div>
+    <div class="loader__count" id="loaderCount">000</div>
+    <p class="loader__msg" id="loaderMsg">Waking up the hens</p>
+  </div>
+
+  <!-- the one WebGL canvas -->
+  <canvas id="world" aria-hidden="true"></canvas>
+  <canvas id="drift" aria-hidden="true"></canvas>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="bubble" id="bubble" role="status" aria-live="polite"></div>
+
+  <!-- 1 · Nav -->
+  <header class="nav" id="nav">
+    <a class="nav__brand" href="#top" aria-label="Clucko, back to top">
+      <svg class="mark" viewBox="0 0 48 48" aria-hidden="true">
+        <g class="mark__rays">
+          <path d="M24 1v6M24 41v6M1 24h6M41 24h6M7.7 7.7l4.3 4.3M36 36l4.3 4.3M7.7 40.3l4.3-4.3M36 12l4.3-4.3"/>
+        </g>
+        <circle cx="24" cy="24" r="13" class="mark__sun"/>
+        <path class="mark__egg" d="M24 14.5c4.4 0 7.6 6.6 7.6 11.2a7.6 7.6 0 0 1-15.2 0c0-4.6 3.2-11.2 7.6-11.2z"/>
+      </svg>
+      <span class="nav__name">Clucko</span>
+    </a>
+    <nav class="nav__links" aria-label="Sections">
+      <a href="#eggs">The eggs</a>
+      <a href="#packs">Packs</a>
+      <a href="#box">The box</a>
+      <a href="#farm">Our farm</a>
+    </nav>
+    <div class="nav__end">
+      <button class="basket" type="button" aria-label="Basket, 0 items">
+        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 12h22l-2.4 12.2a3 3 0 0 1-3 2.4H10.4a3 3 0 0 1-3-2.4L5 12z"/><path d="M11 12l4-7M21 12l-4-7M11 17v5M16 17v5M21 17v5"/></svg>
+        <span class="basket__count" data-basket-count>0</span>
+      </button>
+      <a class="btn btn--yolk btn--sm nav__cta" href="#packs">Order eggs</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- 2 · Hero -->
+    <section class="hero" id="top" data-stage="hero">
+      <div class="hero__sun" aria-hidden="true">
+        <div class="hero__rays"></div>
+        <div class="hero__disc"></div>
+      </div>
+
+      <div class="hero__copy">
+        <p class="eyebrow eyebrow--live" data-hero-in><span class="pulse"></span>laid this morning, just outside Pune</p>
+        <h1 class="hero__title">
+          <span class="line"><span>Clucko,</span></span>
+          <span class="line"><span><em>sunshine.</em></span></span>
+        </h1>
+        <p class="hero__lede" data-hero-in>Eggs from 1,200 free-roaming hens on six green acres, at your door the same morning they're laid. No cages, no cold store, no rush.</p>
+        <div class="hero__cta" data-hero-in>
+          <a class="btn btn--yolk" href="#eggs">Meet the eggs</a>
+          <button class="btn btn--ghost" type="button" data-ask>Ask her for one</button>
+        </div>
+      </div>
+
+      <p class="psst" data-hero-in>
+        psst, you can poke the hen
+        <svg viewBox="0 0 60 40" aria-hidden="true"><path d="M3 6c14-2 30 4 38 14s9 12 13 15M54 35l-1-10M54 35l-9-3"/></svg>
+      </p>
+
+      <div class="marquee" aria-label="Our promises">
+        <div class="marquee__track">
+          <span>Laid at sunrise</span><i>✺</i><span>At your door by 10</span><i>✺</i><span>No cages, ever</span><i>✺</i><span>Every egg candled by hand</span><i>✺</i><span>Hens with names</span><i>✺</i><span>Six acres of pasture</span><i>✺</i>
+          <span aria-hidden="true">Laid at sunrise</span><i>✺</i><span aria-hidden="true">At your door by 10</span><i>✺</i><span aria-hidden="true">No cages, ever</span><i>✺</i><span aria-hidden="true">Every egg candled by hand</span><i>✺</i><span aria-hidden="true">Hens with names</span><i>✺</i><span aria-hidden="true">Six acres of pasture</span><i>✺</i>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 · The eggs (pinned) -->
+    <section class="eggs torn" id="eggs">
+      <div class="stage eggs__stage" data-stage="eggs">
+        <div class="eggs__top">
+          <p class="eyebrow">meet the eggs</p>
+          <div class="eggs__heads">
+            <h2 class="h2 eggs__head is-on" data-head="0">Brown or white? <em>Same sunshine inside.</em></h2>
+            <h2 class="h2 eggs__head" data-head="1" aria-hidden="true">Two shells. <em>One golden yolk.</em></h2>
+            <h2 class="h2 eggs__head" data-head="2" aria-hidden="true">Sealed up. <em>Now, into the box.</em></h2>
+          </div>
+        </div>
+
+        <svg class="leaders" aria-hidden="true"></svg>
+
+        <div class="tag tag--l" data-egg="0" data-i="0"><b>Rhode Island Red</b><span>the hen behind the brown one</span></div>
+        <div class="tag tag--l" data-egg="0" data-i="1"><b>Warm &amp; freckled</b><span>pigment painted on the shell</span></div>
+        <div class="tag tag--l" data-egg="0" data-i="2"><b>Feels sturdy</b><span>a touch thicker to tap</span></div>
+        <div class="tag tag--r" data-egg="1" data-i="0"><b>White Leghorn</b><span>the hen behind the white one</span></div>
+        <div class="tag tag--r" data-egg="1" data-i="1"><b>Clean porcelain</b><span>no pigment, all shine</span></div>
+        <div class="tag tag--r" data-egg="1" data-i="2"><b>Bakers' pick</b><span>stray shell is easy to spot</span></div>
+
+        <ul class="pills" aria-label="Per large egg">
+          <li class="pill" style="--n:0"><b>6.3g</b> protein</li>
+          <li class="pill" style="--n:1"><b>72</b> kcal</li>
+          <li class="pill" style="--n:2"><b>D + B12</b> vitamins</li>
+          <li class="pill" style="--n:3"><b>3×</b> omega-3</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 4 · Packs -->
+    <section class="packs torn" id="packs">
+      <div class="container">
+        <header class="packs__head" data-reveal>
+          <div>
+            <p class="eyebrow">the packs</p>
+            <h2 class="h2">Choose your <em>dozen</em>, or less.</h2>
+            <p class="packs__lede">Packed the morning they're laid, at your door before ten.</p>
+          </div>
+          <div class="seg" role="group" aria-label="Egg colour" data-kind-toggle="packs">
+            <button type="button" data-kind="brown" aria-pressed="true">Brown</button>
+            <button type="button" data-kind="white" aria-pressed="false">White</button>
+          </div>
+        </header>
+
+        <div class="packs__grid">
+          <article class="pack pack--mint" data-size="6" data-price-brown="95" data-price-white="85" data-reveal>
+            <div class="pack__img"><img alt="An open carton of six brown Clucko eggs" data-shot="6"></div>
+            <div class="pack__body">
+              <h3>The half dozen</h3>
+              <p>Two breakfasts and a cake.</p>
+              <div class="pack__foot">
+                <span class="pack__price">₹<b data-price>95</b></span>
+                <button class="btn btn--yolk btn--sm" type="button" data-add>Add to basket</button>
+              </div>
+            </div>
+          </article>
+          <article class="pack pack--butter" data-size="10" data-price-brown="150" data-price-white="135" data-reveal>
+            <div class="pack__img"><img alt="An open carton of ten brown Clucko eggs" data-shot="10"></div>
+            <div class="pack__body">
+              <h3>The weekender</h3>
+              <p>Pancake Sunday, sorted.</p>
+              <div class="pack__foot">
+                <span class="pack__price">₹<b data-price>150</b></span>
+                <button class="btn btn--yolk btn--sm" type="button" data-add>Add to basket</button>
+              </div>
+            </div>
+          </article>
+          <article class="pack pack--sky" data-size="12" data-price-brown="175" data-price-white="160" data-reveal>
+            <span class="pack__badge">most loved</span>
+            <div class="pack__img"><img alt="An open carton of twelve brown Clucko eggs" data-shot="12"></div>
+            <div class="pack__body">
+              <h3>The full dozen</h3>
+              <p>For the egg-a-day crowd.</p>
+              <div class="pack__foot">
+                <span class="pack__price">₹<b data-price>175</b></span>
+                <button class="btn btn--yolk btn--sm" type="button" data-add>Add to basket</button>
+              </div>
+            </div>
+          </article>
+        </div>
+        <p class="packs__note" data-reveal>Free delivery across Pune · pause or skip any week · the box goes back in your recycling</p>
+      </div>
+    </section>
+
+    <!-- 5 · The box (pinned, dark) -->
+    <section class="box torn" id="box" data-nav-dark>
+      <div class="backdrop box__backdrop" aria-hidden="true"><div class="box__glow"></div></div>
+      <div class="stage box__stage" data-stage="box">
+        <div class="box__copy">
+          <p class="eyebrow">the box</p>
+          <h2 class="h2">Packed soft. <em>Sealed with sunshine.</em></h2>
+          <div class="seg seg--dark" role="group" aria-label="Egg colour" data-kind-toggle="box">
+            <button type="button" data-kind="brown" aria-pressed="true">Brown</button>
+            <button type="button" data-kind="white" aria-pressed="false">White</button>
+          </div>
+          <ol class="steps">
+            <li class="step" data-step="0">
+              <span class="step__mark"><span>1</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+              <div><h3>Twelve candled eggs <span class="step__count"><span data-carton-count>0</span>/12</span></h3><p>Each egg is held up to a lamp to check it's perfect, then set in its cup.</p></div>
+            </li>
+            <li class="step" data-step="1">
+              <span class="step__mark"><span>2</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+              <div><h3>Closed up snug</h3><p>Moulded from recycled paper. No plastic, no rattling.</p></div>
+            </li>
+            <li class="step" data-step="2">
+              <span class="step__mark"><span>3</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
+              <div><h3>Sealed &amp; dated</h3><p>Every box carries the day it was laid, so you never have to guess.</p></div>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 · The farm (pinned) -->
+    <section class="farm torn" id="farm">
+      <div class="backdrop farm__sky" aria-hidden="true"><div class="farm__sun"></div></div>
+      <div class="stage farm__stage" data-stage="farm">
+        <div class="farm__copy">
+          <p class="eyebrow">our farm</p>
+          <h2 class="h2">Where the <em>mornings</em> begin.</h2>
+          <p class="farm__lede">Six acres outside Pune where the hens wake with the sun, dust-bathe all afternoon and are tucked in by dark.</p>
+          <dl class="stats">
+            <div><dt><span data-count-to="1200">0</span></dt><dd>happy hens</dd></div>
+            <div><dt><span data-count-to="6">0</span></dt><dd>acres of pasture</dd></div>
+            <div><dt><span data-count-to="4">0</span> hrs</dt><dd>nest to dispatch</dd></div>
+          </dl>
+          <a class="btn btn--yolk" href="#visit">Book a farm visit</a>
+        </div>
+
+        <div class="hotspot" data-spot="barn"><i></i><div class="hotspot__card"><b>The big red barn</b><span>Feed, hay and the egg room, where every egg is candled by hand.</span></div></div>
+        <div class="hotspot" data-spot="coop"><i></i><div class="hotspot__card"><b>The coop on stilts</b><span>Solar-lit nest boxes with fresh straw every morning.</span></div></div>
+        <div class="hotspot" data-spot="pasture"><i></i><div class="hotspot__card"><b>The pasture</b><span>Clover, grubs and a lot of opinions. Open from seven till six.</span></div></div>
+        <div class="hotspot" data-spot="pump"><i></i><div class="hotspot__card"><b>The wind pump</b><span>Lifts water from our own well into every drinker.</span></div></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 7 · Footer -->
+  <footer class="footer torn" id="visit">
+    <div class="container footer__top">
+      <div data-reveal>
+        <p class="eyebrow">see you at breakfast</p>
+        <h2 class="h2">Fresh eggs, <em>every single morning.</em></h2>
+        <a class="btn btn--yolk" href="#packs">Order your first box</a>
+      </div>
+      <form class="news" data-reveal novalidate>
+        <label for="news-email">The Sunday egg letter: recipes, hen gossip, first dibs on farm visits.</label>
+        <div class="news__row">
+          <input id="news-email" type="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+          <button class="btn btn--sm btn--cream" type="submit">Subscribe</button>
+        </div>
+        <p class="news__msg" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+    <div class="container footer__cols">
+      <div><h3>Shop</h3><a href="#packs">Egg packs</a><a href="#packs">Weekly subscription</a><a href="#packs">Gift a box</a></div>
+      <div><h3>Farm</h3><a href="#farm">Meet the hens</a><a href="#visit">Visit us</a><a href="#farm">How we farm</a></div>
+      <div><h3>Help</h3><a href="#visit">Delivery areas</a><a href="#visit">Contact</a><a href="#visit">FAQ</a></div>
+    </div>
+    <div class="wordmark" aria-hidden="true">cluck<span class="fried"><span class="fried__white"></span><span class="fried__yolk"></span></span></div>
+    <div class="container footer__base">
+      <span>© 2026 Clucko Farms · Pune</span>
+      <span>no hens were rushed in the making of this website</span>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="js/app.js"></script>
+  <script type="module" src="js/world.js"></script>
+</body>
+</html>
